@@ -31,6 +31,17 @@ namespace Repository.Accounts
         public async Task<SystemAccount> CreateAsync(SystemAccount account)
         {
             account.AccountPassword = "@1";
+            var lastedAccount = await _context
+                .SystemAccounts.OrderByDescending(a => a.AccountId)
+                .FirstOrDefaultAsync();
+            if (lastedAccount != null)
+            {
+                account.AccountId = (short)(lastedAccount.AccountId + 1);
+            }
+            else
+            {
+                account.AccountId = 1;
+            }
             var addedAccount = await _context.SystemAccounts.AddAsync(account);
             await _context.SaveChangesAsync();
             return addedAccount.Entity;

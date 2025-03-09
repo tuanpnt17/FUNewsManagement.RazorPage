@@ -39,16 +39,6 @@ public class AccountService(IAccountRepository accountRepository, IMapper mapper
     public async Task<AccountDTO?> CreateNewAccountAsync(AccountDTO accountDto)
     {
         var systemAccount = mapper.Map<SystemAccount>(accountDto);
-
-        var accounts = await accountRepository.ListAllAsync();
-        var foundAccountEmail = accounts.FirstOrDefault(x =>
-            x.AccountEmail == accountDto.AccountEmail
-        );
-        if (foundAccountEmail != null)
-        {
-            return null;
-        }
-
         var addedAccount = await accountRepository.CreateAsync(systemAccount);
         var accountDtoToReturn = mapper.Map<AccountDTO>(addedAccount);
         return accountDtoToReturn;
@@ -57,6 +47,17 @@ public class AccountService(IAccountRepository accountRepository, IMapper mapper
     public async Task<int?> UpdateAccountAsync(AccountDTO accountDto)
     {
         var systemAccount = mapper.Map<SystemAccount>(accountDto);
+        var updateAccount = await accountRepository.GetAccountByIdAsync(accountDto.AccountId);
+        if (updateAccount == null)
+            return null;
+        if (systemAccount.AccountEmail != updateAccount.AccountEmail)
+        {
+            var existedAccount = await accountRepository.GetAccountByEmailAsync(
+                systemAccount.AccountEmail
+            );
+            if (existedAccount != null)
+                return null;
+        }
         var effectedRow = await accountRepository.UpdateAsync(systemAccount);
         return effectedRow;
     }
