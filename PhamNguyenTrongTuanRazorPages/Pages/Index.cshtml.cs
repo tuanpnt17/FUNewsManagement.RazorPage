@@ -1,15 +1,16 @@
-namespace PhamNguyenTrongTuanRazorPages.Pages;
+using PhamNguyenTrongTuanRazorPages.Models.NewsArticle;
+using ServiceLayer.NewsArticle;
 
-public class IndexModel(ILogger<IndexModel> logger, FuNewsDbContext context) : PageModel
+namespace PhamNguyenTrongTuanRazorPages.Pages
 {
-    private readonly ILogger<IndexModel> _logger = logger;
-
-    public string? ArticleName { get; set; }
-
-    public void OnGet(string articleId = "1")
+    public class IndexModel(INewsArticleService newsArticleService, IMapper mapper) : PageModel
     {
-        ArticleName = context
-            .NewsArticles.FirstOrDefault(a => a.NewsArticleId == articleId)
-            ?.NewsTitle;
+        public IEnumerable<NewsArticleViewModel> NewsArticles { get; set; } = default!;
+
+        public async Task OnGetAsync()
+        {
+            var articleDtos = await newsArticleService.GetActiveNewsArticlesAsync();
+            NewsArticles = mapper.Map<IEnumerable<NewsArticleViewModel>>(articleDtos);
+        }
     }
 }

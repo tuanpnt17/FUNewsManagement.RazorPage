@@ -1,6 +1,4 @@
-﻿using Repository.Entities;
-using ServiceLayer.Enums;
-using System.ComponentModel.DataAnnotations;
+﻿using ServiceLayer.Enums;
 
 namespace PhamNguyenTrongTuanRazorPages.Models.NewsArticle
 {

@@ -8,11 +8,7 @@ using System.Security.Claims;
 
 namespace PhamNguyenTrongTuanRazorPages.Pages.Account;
 
-public class LoginModel(
-    IMapper mapper,
-    IAccountService accountService,
-    IOptions<AdminOptions> options
-) : PageModel
+public class LoginModel(IAccountService accountService, IOptions<AdminOptions> options) : PageModel
 {
     private readonly AdminOptions _adminOption = options.Value;
 

@@ -21,7 +21,6 @@ namespace Repository.NewsArticles
             var newsArticles = await context
                 .NewsArticles.Include(a => a.Category)
                 .Include(a => a.CreatedBy)
-                .Include(a => a.UpdatedById)
                 .Include(a => a.Tags)
                 .ToListAsync();
             return newsArticles;

@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
-using PhamNguyenTrongTuanRazorPages.Helpers;
 using PhamNguyenTrongTuanRazorPages.Hubs;
 using PhamNguyenTrongTuanRazorPages.Models.Account;
 using Repository.Accounts;
@@ -20,12 +19,6 @@ services.AddRazorPages();
 services.AddDbContext<FuNewsDbContext>(options =>
     options.UseSqlServer(config.GetConnectionString("DefaultConnection"))
 );
-
-//builder
-//    .Services.AddDefaultIdentity<PNTTRazorPagesUser>(options =>
-//        options.SignIn.RequireConfirmedAccount = true
-//    )
-//    .AddEntityFrameworkStores<PNTTRazorPagesContext>();
 
 services.AddSignalR();
 services.AddAutoMapper(
@@ -73,6 +66,8 @@ app.UseRouting();
 app.UseAuthorization();
 
 app.MapRazorPages();
+app.MapFallbackToPage("/NewsArticle/Index");
+
 app.MapHub<SignalRServer>("/signalrserver");
 
 app.Run();
