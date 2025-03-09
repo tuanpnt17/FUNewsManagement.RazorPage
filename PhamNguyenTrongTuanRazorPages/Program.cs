@@ -1,25 +1,67 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
+using PhamNguyenTrongTuanRazorPages.Helpers;
 using PhamNguyenTrongTuanRazorPages.Hubs;
-using Repository.Data;
+using PhamNguyenTrongTuanRazorPages.Models.Account;
+using Repository.Accounts;
+using Repository.Categories;
+using Repository.NewsArticles;
+using Repository.Tags;
+using ServiceLayer.Account;
+using ServiceLayer.Category;
+using ServiceLayer.NewsArticle;
+using ServiceLayer.Tag;
 
 var builder = WebApplication.CreateBuilder(args);
+var services = builder.Services;
+var config = builder.Configuration;
 
-// Add services to the container.
-builder.Services.AddRazorPages();
-builder.Services.AddDbContext<FuNewsDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
+services.AddRazorPages();
+services.AddDbContext<FuNewsDbContext>(options =>
+    options.UseSqlServer(config.GetConnectionString("DefaultConnection"))
 );
-builder.Services.AddSignalR();
-builder.Services.AddRazorPages();
-builder.Services.AddAutoMapper(typeof(Program));
+
+//builder
+//    .Services.AddDefaultIdentity<PNTTRazorPagesUser>(options =>
+//        options.SignIn.RequireConfirmedAccount = true
+//    )
+//    .AddEntityFrameworkStores<PNTTRazorPagesContext>();
+
+services.AddSignalR();
+services.AddAutoMapper(
+    opt =>
+    {
+        opt.AddProfile<MappingProfile>();
+    },
+    typeof(AppDomain)
+);
+services
+    .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Account/Login";
+        options.AccessDeniedPath = "/Account/Login";
+        options.LogoutPath = "/Account/Logout";
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(20);
+        options.SlidingExpiration = true;
+    });
+
+services.Configure<AdminOptions>(config.GetSection(AdminOptions.Admin));
+services.Configure<PaginationOptions>(config.GetSection(PaginationOptions.Pagination));
+services.AddScoped<IAccountService, AccountService>();
+services.AddScoped<IAccountRepository, AccountRepository>();
+services.AddScoped<INewsArticleService, NewsArticleService>();
+services.AddScoped<INewsArticleRepository, NewsArticleRepository>();
+services.AddScoped<ICategoryRepository, CategoryRepository>();
+services.AddScoped<ICategoryService, CategoryService>();
+services.AddScoped<ITagService, TagService>();
+services.AddScoped<ITagRepository, TagRepository>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 

@@ -1,6 +1,3 @@
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Repository.Data;
-
 namespace PhamNguyenTrongTuanRazorPages.Pages;
 
 public class IndexModel(ILogger<IndexModel> logger, FuNewsDbContext context) : PageModel
