@@ -34,11 +34,9 @@ public class EditModel(IAccountService accountService, IMapper mapper) : PageMod
 
         var accountDto = mapper.Map<AccountDTO>(SystemAccount);
         var result = await accountService.UpdateAccountAsync(accountDto);
-        if (result == null)
-        {
-            ModelState.AddModelError("SystemAccount.AccountEmail", "Email is already existed");
-            return Page();
-        }
-        return RedirectToPage("./Index");
+        if (result != null)
+            return RedirectToPage("./Index");
+        ModelState.AddModelError("SystemAccount.AccountEmail", "Email is already existed");
+        return Page();
     }
 }

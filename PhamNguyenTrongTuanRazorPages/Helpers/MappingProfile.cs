@@ -1,8 +1,6 @@
-﻿using AutoMapper;
-using PhamNguyenTrongTuanRazorPages.Models.Account;
+﻿using PhamNguyenTrongTuanRazorPages.Models.Account;
 using PhamNguyenTrongTuanRazorPages.Models.Category;
 using PhamNguyenTrongTuanRazorPages.Models.NewsArticle;
-using Repository.Entities;
 using ServiceLayer.Enums;
 using ServiceLayer.Models;
 

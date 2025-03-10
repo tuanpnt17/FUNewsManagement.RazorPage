@@ -4,34 +4,70 @@ using Repository.Entities;
 
 namespace Repository.Accounts
 {
-    public class AccountRepository : IAccountRepository
+    public class AccountRepository(FuNewsDbContext context) : IAccountRepository
     {
-        private readonly FuNewsDbContext _context;
-
-        public AccountRepository(FuNewsDbContext context)
-        {
-            _context = context;
-        }
-
         public Task<SystemAccount?> GetAccountByEmailAsync(string email)
         {
-            return _context.SystemAccounts.FirstOrDefaultAsync(a => a.AccountEmail == email);
+            return context.SystemAccounts.FirstOrDefaultAsync(a => a.AccountEmail == email);
+        }
+
+        public async Task<PaginatedList<SystemAccount>> GetAccountsQuery(
+            int pageNumber,
+            int pageSize,
+            string? searchString,
+            string? sortOrder
+        )
+        {
+            var systemAccounts = context.SystemAccounts.AsQueryable();
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                searchString = searchString.Trim().ToLower();
+                systemAccounts = systemAccounts.Where(x =>
+                    x.AccountEmail.ToLower().Contains(searchString)
+                    || x.AccountName.ToLower().Contains(searchString)
+                );
+            }
+
+            // name, name_desc
+            // email, email_desc
+            // role, role_desc
+
+            if (sortOrder != null)
+            {
+                systemAccounts = sortOrder switch
+                {
+                    "name" => systemAccounts.OrderBy(a => a.AccountName),
+                    "name_desc" => systemAccounts.OrderByDescending(a => a.AccountName),
+                    "email" => systemAccounts.OrderBy(a => a.AccountEmail),
+                    "email_desc" => systemAccounts.OrderByDescending(a => a.AccountEmail),
+                    "role" => systemAccounts.OrderBy(a => a.AccountRole),
+                    "role_desc" => systemAccounts.OrderByDescending(a => a.AccountRole),
+                    _ => systemAccounts.OrderBy(a => a.AccountId),
+                };
+            }
+
+            var result = await PaginatedList<SystemAccount>.CreateAsync(
+                systemAccounts.AsNoTracking(),
+                pageNumber,
+                pageSize
+            );
+            return result;
         }
 
         public Task<SystemAccount?> GetAccountByIdAsync(int id)
         {
-            return _context.SystemAccounts.FirstOrDefaultAsync(a => a.AccountId == id);
+            return context.SystemAccounts.FirstOrDefaultAsync(a => a.AccountId == id);
         }
 
         public async Task<IEnumerable<SystemAccount>> ListAllAsync()
         {
-            return await _context.SystemAccounts.ToListAsync();
+            return await context.SystemAccounts.ToListAsync();
         }
 
         public async Task<SystemAccount> CreateAsync(SystemAccount account)
         {
             account.AccountPassword = "@1";
-            var lastedAccount = await _context
+            var lastedAccount = await context
                 .SystemAccounts.OrderByDescending(a => a.AccountId)
                 .FirstOrDefaultAsync();
             if (lastedAccount != null)
@@ -42,8 +78,8 @@ namespace Repository.Accounts
             {
                 account.AccountId = 1;
             }
-            var addedAccount = await _context.SystemAccounts.AddAsync(account);
-            await _context.SaveChangesAsync();
+            var addedAccount = await context.SystemAccounts.AddAsync(account);
+            await context.SaveChangesAsync();
             return addedAccount.Entity;
         }
 
@@ -82,7 +118,7 @@ namespace Repository.Accounts
                 systemAccount.AccountPassword = account.AccountPassword;
             }
 
-            var effectedRow = await _context.SaveChangesAsync();
+            var effectedRow = await context.SaveChangesAsync();
             return effectedRow;
         }
 
@@ -95,8 +131,8 @@ namespace Repository.Accounts
             {
                 return null;
             }
-            await Task.Run(() => _context.SystemAccounts.Remove(systemAccount));
-            var effectedRow = await _context.SaveChangesAsync();
+            await Task.Run(() => context.SystemAccounts.Remove(systemAccount));
+            var effectedRow = await context.SaveChangesAsync();
             return effectedRow;
         }
     }

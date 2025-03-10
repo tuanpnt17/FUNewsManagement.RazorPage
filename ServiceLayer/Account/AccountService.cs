@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Repository.Accounts;
+using Repository.Data;
 using Repository.Entities;
 using ServiceLayer.Models;
 
@@ -90,5 +91,30 @@ public class AccountService(IAccountRepository accountRepository, IMapper mapper
         var updateAccount = mapper.Map<SystemAccount>(account);
         var effected = await accountRepository.UpdateAsync(updateAccount);
         return effected;
+    }
+
+    public async Task<PaginatedList<AccountDTO>> ListAccountsWithPaginationAndFiltering(
+        string? searchString,
+        string? sortOrder,
+        int? pageNumber,
+        int? pageSize
+    )
+    {
+        pageNumber ??= 1;
+        pageSize ??= 8;
+        var paginatedListEntity = await accountRepository.GetAccountsQuery(
+            (int)pageNumber,
+            (int)pageSize,
+            searchString,
+            sortOrder
+        );
+        var accountDtos = mapper.Map<PaginatedList<AccountDTO>>(paginatedListEntity);
+        accountDtos = new PaginatedList<AccountDTO>(
+            accountDtos,
+            paginatedListEntity.TotalPages,
+            paginatedListEntity.TotalElements,
+            paginatedListEntity.PageIndex
+        );
+        return accountDtos;
     }
 }

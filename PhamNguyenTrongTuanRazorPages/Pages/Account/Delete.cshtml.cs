@@ -1,50 +1,44 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using ServiceLayer.Account;
+using ServiceLayer.Models;
 
 namespace PhamNguyenTrongTuanRazorPages.Pages.Account;
 
 [Authorize(Roles = "Admin")]
-public class DeleteModel(Repository.Data.FuNewsDbContext context) : PageModel
+public class DeleteModel(IAccountService accountService, IMapper mapper) : PageModel
 {
     [BindProperty]
-    public SystemAccount SystemAccount { get; set; } = null!;
+    public AccountDTO SystemAccount { get; set; } = null!;
 
-    public async Task<IActionResult> OnGetAsync(short? id)
+    public async Task<IActionResult> OnGetAsync(int? id)
     {
         if (id == null)
         {
             return NotFound();
         }
+        var accountDto = await accountService.GetAcountByIdAsync((int)id);
 
-        var systemaccount = await context.SystemAccounts.FirstOrDefaultAsync(m =>
-            m.AccountId == id
-        );
-
-        if (systemaccount == null)
+        if (accountDto == null)
         {
             return NotFound();
         }
         else
         {
-            SystemAccount = systemaccount;
+            SystemAccount = accountDto;
         }
         return Page();
     }
 
-    public async Task<IActionResult> OnPostAsync(short? id)
+    public async Task<IActionResult> OnPostAsync(int? id)
     {
         if (id == null)
         {
             return NotFound();
         }
 
-        var systemaccount = await context.SystemAccounts.FindAsync(id);
-        if (systemaccount != null)
-        {
-            SystemAccount = systemaccount;
-            context.SystemAccounts.Remove(SystemAccount);
-            await context.SaveChangesAsync();
-        }
-
+        var rowEffected = await accountService.DeleteAccountAsync((int)id);
+        if (rowEffected == null)
+            return Page();
         return RedirectToPage("./Index");
     }
 }

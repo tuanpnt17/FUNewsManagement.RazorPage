@@ -1,4 +1,5 @@
-﻿using ServiceLayer.Models;
+﻿using Repository.Data;
+using ServiceLayer.Models;
 
 namespace ServiceLayer.Account;
 
@@ -17,4 +18,11 @@ public interface IAccountService
     Task<IEnumerable<AccountDTO>> ListAllAccounts();
 
     Task<int?> UpdateProfile(AccountDTO account);
+
+    Task<PaginatedList<AccountDTO>> ListAccountsWithPaginationAndFiltering(
+        string? searchString,
+        string? sortOrder,
+        int? pageNumber,
+        int? pageSize
+    );
 }
