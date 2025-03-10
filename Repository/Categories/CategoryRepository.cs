@@ -24,6 +24,8 @@ namespace Repository.Categories
 
         public async Task<Category> CreateAsync(Category category)
         {
+            if (category.ParentCategoryId == 0)
+                category.ParentCategoryId = null;
             var addedAccount = await _context.Categories.AddAsync(category);
             await _context.SaveChangesAsync();
             return addedAccount.Entity;
@@ -43,6 +45,12 @@ namespace Repository.Categories
 
             if (category.IsActive != updatedCategory.IsActive)
                 updatedCategory.IsActive = category.IsActive;
+
+            if (category.ParentCategoryId != updatedCategory.ParentCategoryId)
+            {
+                updatedCategory.ParentCategoryId =
+                    category.ParentCategoryId == 0 ? null : category.ParentCategoryId;
+            }
 
             _context.Categories.Update(updatedCategory);
             var effectedRow = await _context.SaveChangesAsync();
@@ -67,6 +75,7 @@ namespace Repository.Categories
         {
             return await _context
                 .Categories.Include(c => c.NewsArticles)
+                .Include(c => c.ParentCategory)
                 .FirstOrDefaultAsync(c => c.CategoryId == id);
         }
     }

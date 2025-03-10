@@ -13,6 +13,7 @@ namespace ServiceLayer.Models
         public required CategoryStatus CategoryStatus { get; set; }
 
         public int? ParentCategoryId { get; set; }
+
         public virtual CategoryDTO? ParentCategory { get; set; }
         public virtual ICollection<CategoryDTO>? SubCategories { get; set; }
 

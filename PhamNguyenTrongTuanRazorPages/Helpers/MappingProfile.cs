@@ -49,6 +49,7 @@ namespace PhamNguyenTrongTuanRazorPages.Helpers
                 .ReverseMap();
             CreateMap<CategoryDTO, AddNewCategoryViewModel>().ReverseMap();
             CreateMap<CategoryDTO, UpdateCategoryViewModel>().ReverseMap();
+            CreateMap<CategoryDTO, ParentCategoryViewModel>().ReverseMap();
 
             #endregion
 

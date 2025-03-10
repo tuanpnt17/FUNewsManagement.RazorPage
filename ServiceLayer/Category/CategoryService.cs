@@ -21,6 +21,13 @@ namespace ServiceLayer.Category
             return categoryDto;
         }
 
+        public async Task<IEnumerable<CategoryDTO>> GetParentCategoreisAsync()
+        {
+            var category = await categoryRepository.ListAllAsync();
+            var parent = category.Where(c => c.ParentCategoryId == null);
+            return mapper.Map<IEnumerable<CategoryDTO>>(parent);
+        }
+
         public async Task<CategoryDTO> CreateCategoryAsync(CategoryDTO categoryDto)
         {
             var category = mapper.Map<Repository.Entities.Category>(categoryDto);

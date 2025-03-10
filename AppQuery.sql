@@ -1,1 +1,1 @@
-﻿select * from dbo.SystemAccount
+﻿select * from dbo.Category

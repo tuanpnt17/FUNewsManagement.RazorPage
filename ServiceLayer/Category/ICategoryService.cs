@@ -6,6 +6,7 @@ namespace ServiceLayer.Category
     {
         Task<IEnumerable<CategoryDTO>> GetCategoriesAsync();
         Task<CategoryDTO?> GetCategoryByIdAsync(int categoryId);
+        Task<IEnumerable<CategoryDTO>> GetParentCategoreisAsync();
 
         Task<CategoryDTO> CreateCategoryAsync(CategoryDTO categoryDto);
 

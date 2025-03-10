@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using ServiceLayer.Enums;
+﻿using ServiceLayer.Enums;
 
 namespace PhamNguyenTrongTuanRazorPages.Models.Category
 {
@@ -20,5 +19,8 @@ namespace PhamNguyenTrongTuanRazorPages.Models.Category
         [Display(Name = "Status")]
         [Required]
         public required CategoryStatus CategoryStatus { get; set; }
+
+        [Display(Name = "Parent")]
+        public int? ParentCategoryId { get; set; }
     }
 }
