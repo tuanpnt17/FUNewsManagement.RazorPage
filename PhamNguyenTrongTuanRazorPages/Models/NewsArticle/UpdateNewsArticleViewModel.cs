@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using ServiceLayer.Enums;
+﻿using ServiceLayer.Enums;
 using ServiceLayer.Models;
 
 namespace PhamNguyenTrongTuanRazorPages.Models.NewsArticle
@@ -51,6 +50,8 @@ namespace PhamNguyenTrongTuanRazorPages.Models.NewsArticle
 
         [Display(Name = "Created By")]
         public string CreatedByName { get; set; } = string.Empty;
+
+        public int CreatedById { get; set; }
 
         [Display(Name = "Last Modified By")]
         public string UpdatedByName { get; set; } = string.Empty;

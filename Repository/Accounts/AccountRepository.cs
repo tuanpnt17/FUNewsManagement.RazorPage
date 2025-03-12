@@ -28,23 +28,16 @@ namespace Repository.Accounts
                 );
             }
 
-            // name, name_desc
-            // email, email_desc
-            // role, role_desc
-
-            if (sortOrder != null)
+            systemAccounts = sortOrder switch
             {
-                systemAccounts = sortOrder switch
-                {
-                    "name" => systemAccounts.OrderBy(a => a.AccountName),
-                    "name_desc" => systemAccounts.OrderByDescending(a => a.AccountName),
-                    "email" => systemAccounts.OrderBy(a => a.AccountEmail),
-                    "email_desc" => systemAccounts.OrderByDescending(a => a.AccountEmail),
-                    "role" => systemAccounts.OrderBy(a => a.AccountRole),
-                    "role_desc" => systemAccounts.OrderByDescending(a => a.AccountRole),
-                    _ => systemAccounts.OrderBy(a => a.AccountId),
-                };
-            }
+                "name" => systemAccounts.OrderBy(a => a.AccountName),
+                "name_desc" => systemAccounts.OrderByDescending(a => a.AccountName),
+                "email" => systemAccounts.OrderBy(a => a.AccountEmail),
+                "email_desc" => systemAccounts.OrderByDescending(a => a.AccountEmail),
+                "role" => systemAccounts.OrderBy(a => a.AccountRole),
+                "role_desc" => systemAccounts.OrderByDescending(a => a.AccountRole),
+                _ => systemAccounts.OrderByDescending(a => a.AccountId),
+            };
 
             var result = await PaginatedList<SystemAccount>.CreateAsync(
                 systemAccounts.AsNoTracking(),

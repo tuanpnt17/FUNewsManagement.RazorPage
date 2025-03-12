@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using PhamNguyenTrongTuanRazorPages.Models.Category;
 using ServiceLayer.Category;
 using ServiceLayer.Models;
 
 namespace PhamNguyenTrongTuanRazorPages.Pages.Category
 {
+    [Authorize(Roles = "Staff")]
     public class EditModel(ICategoryService categoryService, IMapper mapper) : PageModel
     {
         [BindProperty]

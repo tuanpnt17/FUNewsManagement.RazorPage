@@ -78,5 +78,38 @@ namespace Repository.Categories
                 .Include(c => c.ParentCategory)
                 .FirstOrDefaultAsync(c => c.CategoryId == id);
         }
+
+        public async Task<PaginatedList<Category>> GetCategoriesQuery(
+            int pageNumber,
+            int pageSize,
+            string? searchString,
+            string? sortOrder
+        )
+        {
+            var categories = _context.Categories.AsQueryable();
+            categories = categories.Include(c => c.ParentCategory);
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                searchString = searchString.Trim().ToLower();
+                categories = categories.Where(x =>
+                    x.CategoryName.ToLower().Contains(searchString)
+                    || x.CategoryDesciption.ToLower().Contains(searchString)
+                );
+            }
+            categories = sortOrder switch
+            {
+                "name" => categories.OrderBy(c => c.CategoryName),
+                "name_desc" => categories.OrderByDescending(c => c.CategoryName),
+                "id" => categories.OrderBy(c => c.CategoryId),
+                _ => categories.OrderByDescending(c => c.CategoryId),
+            };
+
+            var result = await PaginatedList<Category>.CreateAsync(
+                categories.AsNoTracking(),
+                pageNumber,
+                pageSize
+            );
+            return result;
+        }
     }
 }

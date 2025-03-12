@@ -35,12 +35,44 @@ namespace Repository.NewsArticles
 
         public async Task<int?> UpdateAsync(NewsArticle newsArticle)
         {
-            var systemAccount = await GetArticleByIdAsync(newsArticle.NewsArticleId);
-            if (systemAccount == null)
+            var existingArticle = await context
+                .NewsArticles.Include(a => a.Tags)
+                .FirstOrDefaultAsync(a => a.NewsArticleId == newsArticle.NewsArticleId);
+
+            if (existingArticle == null)
             {
                 return null;
             }
-            await Task.Run(() => context.NewsArticles.Update(systemAccount));
+
+            // Update properties
+            existingArticle.NewsTitle = newsArticle.NewsTitle;
+            existingArticle.Headline = newsArticle.Headline;
+            existingArticle.NewsContent = newsArticle.NewsContent;
+            existingArticle.NewsSource = newsArticle.NewsSource;
+            existingArticle.CategoryId = newsArticle.CategoryId;
+            existingArticle.NewsStatus = newsArticle.NewsStatus;
+            existingArticle.UpdatedById = newsArticle.UpdatedById;
+            existingArticle.ModifiedDate = DateTime.UtcNow;
+
+            // Handle tags
+            var existingTags = existingArticle.Tags.ToList();
+            foreach (var tag in existingTags)
+            {
+                if (newsArticle.Tags.All(t => t.TagId != tag.TagId))
+                {
+                    existingArticle.Tags.Remove(tag);
+                }
+            }
+
+            foreach (var tag in newsArticle.Tags)
+            {
+                if (existingArticle.Tags.All(t => t.TagId != tag.TagId))
+                {
+                    existingArticle.Tags.Add(tag);
+                }
+            }
+
+            context.NewsArticles.Update(existingArticle);
             var effectedRow = await context.SaveChangesAsync();
             return effectedRow;
         }

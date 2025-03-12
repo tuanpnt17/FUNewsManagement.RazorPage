@@ -1,5 +1,4 @@
-﻿using Repository.Entities;
-using ServiceLayer.Enums;
+﻿using ServiceLayer.Enums;
 
 namespace ServiceLayer.Models;
 
@@ -29,9 +28,9 @@ public class NewsArticleDTO
 
     // Navigation properties
     public virtual CategoryDTO Category { get; set; } = null!;
-    public virtual SystemAccount CreatedBy { get; set; } = null!;
-    public virtual SystemAccount UpdatedBy { get; set; } = null!;
+    public virtual AccountDTO CreatedBy { get; set; } = null!;
+    public virtual AccountDTO UpdatedBy { get; set; } = null!;
 
     // Relationship to Tags via the join entity
-    public virtual ICollection<Repository.Entities.Tag> Tags { get; set; } = [];
+    public virtual ICollection<TagDTO> Tags { get; set; } = [];
 }

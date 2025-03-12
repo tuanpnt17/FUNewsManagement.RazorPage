@@ -1,13 +1,19 @@
-﻿using AutoMapper;
-using Repository.NewsArticles;
-using ServiceLayer.Models;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using System.Text;
+using AutoMapper;
+using Repository.NewsArticles;
+using ServiceLayer.Account;
+using ServiceLayer.Models;
+using ServiceLayer.Tag;
 
 namespace ServiceLayer.NewsArticle
 {
-    public class NewsArticleService(INewsArticleRepository articleRepository, IMapper mapper)
-        : INewsArticleService
+    public class NewsArticleService(
+        INewsArticleRepository articleRepository,
+        IMapper mapper,
+        ITagService tagService,
+        IAccountService accountService
+    ) : INewsArticleService
     {
         public async Task<IEnumerable<NewsArticleDTO>> GetActiveNewsArticlesAsync()
         {
@@ -20,8 +26,18 @@ namespace ServiceLayer.NewsArticle
         public async Task<IEnumerable<NewsArticleDTO>> GetAllNewsArticleAsync()
         {
             var articles = await articleRepository.ListAllAsync();
+
             var articleDtos = mapper.Map<IEnumerable<NewsArticleDTO>>(articles);
-            return articleDtos;
+            var allNewsArticleAsync = articleDtos.ToList();
+            foreach (var article in allNewsArticleAsync)
+            {
+                var updatedBy = await accountService.GetAcountByIdAsync(article.UpdatedById);
+                if (updatedBy != null)
+                {
+                    article.UpdatedBy = updatedBy;
+                }
+            }
+            return allNewsArticleAsync;
         }
 
         public async Task<NewsArticleDTO?> GetActiveNewsArticleByIdAsync(string articleId)
@@ -72,16 +88,7 @@ namespace ServiceLayer.NewsArticle
             var article = mapper.Map<Repository.Entities.NewsArticle>(articleDto);
             if (articleDto.TagIds.Any())
             {
-                //article.NewsTags = articleDto
-                //    .TagIds.Select(tagId => new NewsTag
-                //    {
-                //        TagId = tagId,
-                //        NewsArticleId = article.NewsArticleId,
-                //    })
-                //    .ToList();
-                article.Tags = articleDto
-                    .TagIds.Select(tagId => new Repository.Entities.Tag { TagId = tagId })
-                    .ToList();
+                article.Tags = await tagService.GetTagsByIdsAsync(articleDto.TagIds);
             }
             var addedNewsArticle = await articleRepository.CreateAsync(article);
             var articleDtoToReturn = mapper.Map<NewsArticleDTO>(addedNewsArticle);
@@ -119,9 +126,7 @@ namespace ServiceLayer.NewsArticle
             var article = mapper.Map<Repository.Entities.NewsArticle>(articleDto);
             if (articleDto.TagIds.Any())
             {
-                article.Tags = articleDto
-                    .TagIds.Select(tagId => new Repository.Entities.Tag { TagId = tagId })
-                    .ToList();
+                article.Tags = await tagService.GetTagsByIdsAsync(articleDto.TagIds);
             }
             var effectedRow = await articleRepository.UpdateAsync(article);
             return effectedRow;

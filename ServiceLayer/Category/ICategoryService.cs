@@ -1,4 +1,5 @@
-﻿using ServiceLayer.Models;
+﻿using Repository.Data;
+using ServiceLayer.Models;
 
 namespace ServiceLayer.Category
 {
@@ -12,5 +13,11 @@ namespace ServiceLayer.Category
 
         Task<int?> UpdateCategoryAsync(CategoryDTO categoryDto);
         Task<int?> DeleteCategoryAsync(int categoryId);
+        Task<PaginatedList<Repository.Entities.Category>> ListCategoryWithPaginationAndFitler(
+            string? searchString,
+            string? sortOrder,
+            int? pageNumber,
+            int? pageSize
+        );
     }
 }

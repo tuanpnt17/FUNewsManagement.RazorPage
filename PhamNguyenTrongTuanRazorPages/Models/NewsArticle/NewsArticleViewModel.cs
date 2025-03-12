@@ -4,7 +4,7 @@ namespace PhamNguyenTrongTuanRazorPages.Models.NewsArticle
 {
     public class NewsArticleViewModel
     {
-        public int NewsArticleId { get; set; }
+        public string NewsArticleId { get; set; } = string.Empty;
         public string NewsTitle { get; set; } = string.Empty;
         public string Headline { get; set; } = string.Empty;
         public string NewsContent { get; set; } = string.Empty;

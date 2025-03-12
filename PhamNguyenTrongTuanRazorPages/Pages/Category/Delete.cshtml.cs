@@ -1,8 +1,10 @@
-﻿using PhamNguyenTrongTuanRazorPages.Models.Category;
+﻿using Microsoft.AspNetCore.Authorization;
+using PhamNguyenTrongTuanRazorPages.Models.Category;
 using ServiceLayer.Category;
 
 namespace PhamNguyenTrongTuanRazorPages.Pages.Category
 {
+    [Authorize(Roles = "Staff")]
     public class DeleteModel(ICategoryService categoryService, IMapper mapper) : PageModel
     {
         [BindProperty]

@@ -1,7 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
-
-namespace PhamNguyenTrongTuanRazorPages.Pages.NewsArticle
+﻿namespace PhamNguyenTrongTuanRazorPages.Pages.NewsArticle
 {
+    [Authorize(Roles = "Staff")]
     public class DeleteModel : PageModel
     {
         private readonly Repository.Data.FuNewsDbContext _context;

@@ -1,33 +1,37 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using PhamNguyenTrongTuanRazorPages.Models.NewsArticle;
+using ServiceLayer.Category;
+using ServiceLayer.Models;
+using ServiceLayer.NewsArticle;
+using ServiceLayer.Tag;
 
 namespace PhamNguyenTrongTuanRazorPages.Pages.NewsArticle
 {
-    public class CreateModel : PageModel
+    public class CreateModel(
+        INewsArticleService newsArticleService,
+        IMapper mapper,
+        ICategoryService categoryService,
+        ITagService tagService
+    ) : PageModel
     {
-        private readonly Repository.Data.FuNewsDbContext _context;
-
-        public CreateModel(Repository.Data.FuNewsDbContext context)
+        public async Task<IActionResult> OnGet()
         {
-            _context = context;
-        }
-
-        public IActionResult OnGet()
-        {
-            ViewData["CategoryId"] = new SelectList(
-                _context.Categories,
+            SelectListItems = new SelectList(
+                await categoryService.GetCategoriesAsync(),
                 "CategoryId",
-                "CategoryDesciption"
+                "CategoryName"
             );
-            ViewData["CreatedById"] = new SelectList(
-                _context.SystemAccounts,
-                "AccountId",
-                "AccountId"
-            );
+            TagDtos = await tagService.GetAllTagsAsync();
+            NewsArticle = new();
             return Page();
         }
 
         [BindProperty]
-        public Repository.Entities.NewsArticle NewsArticle { get; set; } = default!;
+        public AddNewsArticleViewModel NewsArticle { get; set; } = null!;
+
+        public IEnumerable<TagDTO> TagDtos { get; set; } = [];
+        public SelectList SelectListItems { get; set; } = null!;
 
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
@@ -37,9 +41,10 @@ namespace PhamNguyenTrongTuanRazorPages.Pages.NewsArticle
                 return Page();
             }
 
-            _context.NewsArticles.Add(NewsArticle);
-            await _context.SaveChangesAsync();
+            var newsArticleDto = mapper.Map<NewsArticleDTO>(NewsArticle);
 
+            var currentUserId = HttpContext.User.FindFirst(x => x.Type == ClaimTypes.Sid)!.Value;
+            await newsArticleService.CreateNewsArticleAsync(newsArticleDto, currentUserId);
             return RedirectToPage("./Index");
         }
     }

@@ -1,9 +1,13 @@
-﻿using ServiceLayer.Models;
+﻿using ServiceLayer.Account;
+using ServiceLayer.Models;
 using ServiceLayer.NewsArticle;
 
 namespace PhamNguyenTrongTuanRazorPages.Pages.NewsArticle
 {
-    public class DetailsModel(INewsArticleService newsArticleService) : PageModel
+    public class DetailsModel(
+        INewsArticleService newsArticleService,
+        IAccountService accountService
+    ) : PageModel
     {
         public NewsArticleDTO NewsArticle { get; set; } = null!;
 
@@ -23,6 +27,11 @@ namespace PhamNguyenTrongTuanRazorPages.Pages.NewsArticle
             {
                 NewsArticle = newsarticle;
             }
+            var updatedByAccount = await accountService.GetAcountByIdAsync(newsarticle.UpdatedById);
+
+            ViewData["UpdatedByName"] =
+                updatedByAccount == null ? "" : updatedByAccount.AccountName;
+
             return Page();
         }
     }

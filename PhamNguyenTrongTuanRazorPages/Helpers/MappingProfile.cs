@@ -45,8 +45,13 @@ namespace PhamNguyenTrongTuanRazorPages.Helpers
                         opt.MapFrom(src =>
                             src.IsActive == true ? CategoryStatus.Active : CategoryStatus.Inactive
                         )
-                )
-                .ReverseMap();
+                );
+            CreateMap<CategoryDTO, Category>()
+                .ForMember(
+                    x => x.IsActive,
+                    opt =>
+                        opt.MapFrom(a => a.CategoryStatus == CategoryStatus.Active ? true : false)
+                );
             CreateMap<CategoryDTO, AddNewCategoryViewModel>().ReverseMap();
             CreateMap<CategoryDTO, UpdateCategoryViewModel>().ReverseMap();
             CreateMap<CategoryDTO, ParentCategoryViewModel>().ReverseMap();
@@ -62,7 +67,16 @@ namespace PhamNguyenTrongTuanRazorPages.Helpers
                             src.NewsStatus == true ? NewsStatus.Active : NewsStatus.Inactive
                         )
                 )
+                .ForMember(
+                    dest => dest.TagIds,
+                    opt => opt.MapFrom(src => src.Tags.Select(x => x.TagId))
+                )
                 .ReverseMap();
+            CreateMap<NewsArticleDTO, NewsArticle>()
+                .ForMember(
+                    dest => dest.NewsStatus,
+                    opt => opt.MapFrom(src => src.NewsStatus == NewsStatus.Active)
+                );
             CreateMap<NewsArticleDTO, NewsArticleViewModel>().ReverseMap();
             CreateMap<NewsArticleDTO, ViewNewsArticleViewModel>()
                 .ForMember(

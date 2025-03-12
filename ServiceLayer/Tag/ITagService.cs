@@ -9,4 +9,5 @@ public interface ITagService
     Task<TagDTO> AddTagAsync(TagDTO tag);
     Task<TagDTO> UpdateTagAsync(TagDTO tag);
     Task<TagDTO> DeleteTagAsync(int tagId);
+    Task<ICollection<Repository.Entities.Tag>> GetTagsByIdsAsync(IEnumerable<int> articleDtoTagIds);
 }

@@ -1,1 +1,1 @@
-﻿select * from dbo.Category
+﻿select * from dbo.NewsArticle

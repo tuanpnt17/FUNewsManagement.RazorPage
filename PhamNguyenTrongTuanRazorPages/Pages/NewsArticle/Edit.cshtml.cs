@@ -1,21 +1,25 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
+using PhamNguyenTrongTuanRazorPages.Models.NewsArticle;
+using ServiceLayer.Account;
+using ServiceLayer.Category;
+using ServiceLayer.Models;
+using ServiceLayer.NewsArticle;
+using ServiceLayer.Tag;
 
 namespace PhamNguyenTrongTuanRazorPages.Pages.NewsArticle
 {
-    [Authorize]
-    public class EditModel : PageModel
+    [Authorize(Roles = "Staff")]
+    public class EditModel(
+        ICategoryService categoryService,
+        IAccountService accountService,
+        ITagService tagService,
+        INewsArticleService newsArticleService,
+        IMapper mapper
+    ) : PageModel
     {
-        private readonly Repository.Data.FuNewsDbContext _context;
-
-        public EditModel(Repository.Data.FuNewsDbContext context)
-        {
-            _context = context;
-        }
-
         [BindProperty]
-        public Repository.Entities.NewsArticle NewsArticle { get; set; } = default!;
+        public UpdateNewsArticleViewModel NewsArticle { get; set; } = null!;
 
         public async Task<IActionResult> OnGetAsync(string? id)
         {
@@ -24,24 +28,25 @@ namespace PhamNguyenTrongTuanRazorPages.Pages.NewsArticle
                 return NotFound();
             }
 
-            var newsarticle = await _context.NewsArticles.FirstOrDefaultAsync(m =>
-                m.NewsArticleId == id
-            );
-            if (newsarticle == null)
+            var newsArticleDto = await newsArticleService.GetNewsArticleByIdAsync(id);
+            if (newsArticleDto == null)
             {
                 return NotFound();
             }
-            NewsArticle = newsarticle;
+            var updateNewsArticleViewModel = mapper.Map<UpdateNewsArticleViewModel>(newsArticleDto);
+
+            NewsArticle = updateNewsArticleViewModel;
+
             ViewData["CategoryId"] = new SelectList(
-                _context.Categories,
+                await categoryService.GetCategoriesAsync(),
                 "CategoryId",
-                "CategoryDesciption"
+                "CategoryName"
             );
-            ViewData["CreatedById"] = new SelectList(
-                _context.SystemAccounts,
-                "AccountId",
-                "AccountId"
-            );
+            ViewData["Tags"] = await tagService.GetAllTagsAsync();
+            ViewData["UpdatedByName"] = (
+                (await accountService.GetAcountByIdAsync(newsArticleDto.UpdatedById))!
+            ).AccountName;
+
             return Page();
         }
 
@@ -51,33 +56,21 @@ namespace PhamNguyenTrongTuanRazorPages.Pages.NewsArticle
         {
             if (!ModelState.IsValid)
             {
+                ViewData["CategoryId"] = new SelectList(
+                    await categoryService.GetCategoriesAsync(),
+                    "CategoryId",
+                    "CategoryName"
+                );
+                ViewData["Tags"] = await tagService.GetAllTagsAsync();
                 return Page();
             }
-
-            _context.Attach(NewsArticle).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!NewsArticleExists(NewsArticle.NewsArticleId))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
+            var newsArticleDto = mapper.Map<NewsArticleDTO>(NewsArticle);
+            var currentUserId = HttpContext.User.FindFirst(x => x.Type == ClaimTypes.Sid)!.Value;
+            var updatedNewsArticle = await newsArticleService.UpdateNewsArticleAsync(
+                newsArticleDto,
+                currentUserId
+            );
             return RedirectToPage("./Index");
-        }
-
-        private bool NewsArticleExists(string id)
-        {
-            return _context.NewsArticles.Any(e => e.NewsArticleId == id);
         }
     }
 }

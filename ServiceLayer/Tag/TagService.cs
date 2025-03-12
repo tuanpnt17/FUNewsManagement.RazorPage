@@ -41,5 +41,13 @@ namespace ServiceLayer.Tag
         {
             throw new NotImplementedException();
         }
+
+        public async Task<ICollection<Repository.Entities.Tag>> GetTagsByIdsAsync(
+            IEnumerable<int> articleDtoTagIds
+        )
+        {
+            var tags = await _tagRepository.GetTagsByIdsAsync(articleDtoTagIds);
+            return tags;
+        }
     }
 }

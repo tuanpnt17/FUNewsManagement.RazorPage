@@ -33,4 +33,10 @@ public class TagRepository : ITagRepository
     {
         throw new NotImplementedException();
     }
+
+    public async Task<ICollection<Tag>> GetTagsByIdsAsync(IEnumerable<int> articleDtoTagIds)
+    {
+        var tags = await _context.Tags.Where(t => articleDtoTagIds.Contains(t.TagId)).ToListAsync();
+        return tags;
+    }
 }

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Repository.Categories;
+using Repository.Data;
 using ServiceLayer.Models;
 
 namespace ServiceLayer.Category
@@ -55,6 +56,25 @@ namespace ServiceLayer.Category
             }
             var effectedRow = await categoryRepository.DeleteAsync(category);
             return effectedRow;
+        }
+
+        public async Task<
+            PaginatedList<Repository.Entities.Category>
+        > ListCategoryWithPaginationAndFitler(
+            string? searchString,
+            string? sortOrder,
+            int? pageNumber,
+            int? pageSize
+        )
+        {
+            pageNumber ??= 1;
+            pageSize ??= 8;
+            return await categoryRepository.GetCategoriesQuery(
+                (int)pageNumber,
+                (int)pageSize,
+                searchString,
+                sortOrder
+            );
         }
     }
 }
