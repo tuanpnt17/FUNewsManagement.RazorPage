@@ -97,6 +97,11 @@ namespace Repository.Accounts
                 && !string.IsNullOrEmpty(account.AccountEmail)
             )
             {
+                var existed = await GetAccountByEmailAsync(account.AccountEmail);
+                if (existed != null && existed.AccountId != account.AccountId)
+                {
+                    return null;
+                }
                 systemAccount.AccountEmail = account.AccountEmail;
             }
             if (systemAccount.AccountRole != account.AccountRole)

@@ -1,0 +1,77 @@
+﻿@page
+@model PhamNguyenTrongTuanRazorPages.Pages.Account.ProfileModel
+@{
+    ViewData["Title"] = "Profile";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>@ViewData["Title"]</h1>
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header">
+            Update Profile
+        </div>
+        <div class="card-body">
+
+            <form asp-page="/Account/Profile" method="post">
+                @Html.AntiForgeryToken()
+                <div class="form-group">
+                    <input asp-for="UpdateProfileViewModel.AccountId" hidden />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" asp-for="UpdateProfileViewModel.AccountName"></label>
+                    <input asp-for="UpdateProfileViewModel.AccountName" class="form-control" placeholder="Your name" />
+                    <span asp-validation-for="UpdateProfileViewModel.AccountName" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" asp-for="UpdateProfileViewModel.AccountEmail"></label>
+                    <input asp-for="UpdateProfileViewModel.AccountEmail" class="form-control" placeholder="Your email" />
+                    <span asp-validation-for="UpdateProfileViewModel.AccountEmail" class="text-danger"></span>
+                </div>
+
+                <div id="passwordSection">
+                    <div class="form-group">
+                        <label class="form-label" asp-for="UpdateProfileViewModel.AccountPassword"></label>
+                        <input asp-for="UpdateProfileViewModel.AccountPassword" class="form-control" value="@Model.UpdateProfileViewModel.AccountPassword" placeholder="Password" />
+                        <span asp-validation-for="UpdateProfileViewModel.AccountPassword" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" asp-for="UpdateProfileViewModel.ConfirmPassword"></label>
+                        <input asp-for="UpdateProfileViewModel.ConfirmPassword" class="form-control" value="@Model.UpdateProfileViewModel.AccountPassword" placeholder="Confirm Password" />
+                        <span asp-validation-for="UpdateProfileViewModel.ConfirmPassword" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary mt-3">Update Profile</button>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    
+    <script>
+        $(document).ready(function() {
+            const dataSuccess = '@TempData["Success"]';
+            const dataError = '@TempData["Error"]';
+            if (dataSuccess && dataSuccess.trim().length > 0) {
+                Swal.fire({
+                    title: "Update successfully",
+                    text: dataSuccess,
+                    icon: "success"
+                });
+            }
+            if (dataError && dataError.trim().length > 0) {
+                Swal.fire({
+                    title: "Update failed",
+                    text: dataError,
+                    icon: "error"
+                });
+            }
+        });
+    </script>
+}

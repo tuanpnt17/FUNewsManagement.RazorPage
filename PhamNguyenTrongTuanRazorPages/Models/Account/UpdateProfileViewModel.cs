@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using ServiceLayer.Enums;
 
 namespace PhamNguyenTrongTuanRazorPages.Models.Account
 {
@@ -26,5 +26,6 @@ namespace PhamNguyenTrongTuanRazorPages.Models.Account
             ErrorMessage = "The password and confirmation password do not match."
         )]
         public string? ConfirmPassword { get; set; }
+        public AccountRole AccountRole { get; set; }
     }
 }

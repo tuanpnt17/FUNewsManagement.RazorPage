@@ -1,0 +1,79 @@
+﻿@page
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using ServiceLayer.Enums
+@model PhamNguyenTrongTuanRazorPages.Pages.Dashboard.IndexModel
+@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+
+<div class="d-flex justify-content-between align-items-center">
+    <h1>@ViewData["Title"]</h1>
+    @* <form class="form-inline my-2 my-lg-0 d-flex w-25">
+        <div id="searchInputWrapper">
+            
+        </div>
+        <button class="btn btn-outline-success my-2 my-sm-0" type="button" id="searchBtn">Search</button>
+    </form> *@
+
+    <form class="d-flex align-items-center" asp-page="/Dashboard/Index" method="get" id="filterDateForm">
+        <div class="form-group">
+            <input class="form-control" type="date" name="startDate" value="@(Convert.ToDateTime(ViewData["StartDate"]).ToLocalTime().ToString("yyyy-MM-dd"))" id="startDateControl" />
+        </div>
+        <span> - </span>
+        <div class="form-group">
+            <input class="form-control" type="date" name="endDate" value="@(Convert.ToDateTime(ViewData["EndDate"]).ToLocalTime().ToString("yyyy-MM-dd"))" id="endDateControl" />
+        </div>
+    </form>
+</div>
+<table class="table">
+    <thead>
+    <tr>
+        <tr>
+            <th scope="col">Id</th>
+            <th scope="col">Title</th>
+            <th scope="col">Headline</th>
+            <th scope="col">Category</th>
+            <th scope="col">Date modified</th>
+            <th scope="col">Updated By</th>
+            <th scope="col">Status</th>
+        </tr>
+    </tr>
+    </thead>
+    <tbody >
+        @foreach (var newsArticle in Model.ViewNewsArticles)
+        {
+            <tr>
+                <td>@newsArticle.NewsArticleId</td>
+                <td>@FormatHelper.TruncateString(newsArticle.NewsTitle, 4)</td>
+                <td>@FormatHelper.TruncateString(newsArticle.Headline, 5)</td>
+                <td>@newsArticle.CategoryName</td>
+                <td>@FormatHelper.FormatActualTime(@newsArticle.ModifiedDate)</td>
+                <td>@newsArticle.CreatedByName</td>
+                <td><span class="@(newsArticle.NewsStatus != NewsStatus.Inactive? "badge badge-success" : "badge badge-danger")">@newsArticle.NewsStatus</span></td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts {
+    
+    <script>
+
+        $(document).ready(function() {
+            $('#startDateControl, #endDateControl').on('change', function() {
+                $('#filterDateForm').submit();
+            });
+            let dateError = '@TempData["DateRangeError"]';
+            if (dateError && dateError.trim().length > 0) {
+
+                Swal.fire({
+                    title: "Bad request!",
+                    text: dateError,
+                    icon: "error"
+                });
+            }
+        });
+    </script>
+}

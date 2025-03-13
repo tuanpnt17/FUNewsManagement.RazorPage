@@ -1,10 +1,10 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Extensions.Options;
 using PhamNguyenTrongTuanRazorPages.Models.Account;
 using ServiceLayer.Account;
 using ServiceLayer.Enums;
-using System.Security.Claims;
 
 namespace PhamNguyenTrongTuanRazorPages.Pages.Account;
 
@@ -74,10 +74,10 @@ public class LoginModel(IAccountService accountService, IOptions<AdminOptions> o
             );
             if (accountDto.AccountRole == AccountRole.Staff)
             {
-                return RedirectToPage("/Category/Index");
+                return RedirectToPage("/NewsArticle/Index");
             }
 
-            return RedirectToPage("/NewsArticle/Index");
+            return RedirectToPage("/Index");
         }
 
         // If user is admin
@@ -103,6 +103,6 @@ public class LoginModel(IAccountService accountService, IOptions<AdminOptions> o
             adminPrincipal,
             new AuthenticationProperties { IsPersistent = LoginAccountViewModel.RememberMe }
         );
-        return RedirectToPage("/Index");
+        return RedirectToPage("/Dashboard/Index");
     }
 }

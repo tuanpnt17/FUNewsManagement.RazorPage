@@ -43,6 +43,9 @@ function LoadNewsArticle(
             let tr = '';
 
             $.each(data.newsArticles, function (i, item) {
+                let modifieddate = new Date(item.modifiedDate);
+                let localDate = new Date(modifieddate.getTime() - modifieddate.getTimezoneOffset() * 60000);
+                let formattedDate = localDate.toLocaleString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
                 tr += `
                     <tr>
                         <td>
@@ -61,7 +64,7 @@ function LoadNewsArticle(
                             ${item.createdByName}
                         </td>
                         <td>
-                            ${item.modifiedDate}
+                            ${formattedDate}
                         </td>
                         <td>
                             ${item.updatedByName}
