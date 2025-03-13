@@ -1,6 +1,7 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
 using AutoMapper;
+using Repository.Data;
 using Repository.NewsArticles;
 using ServiceLayer.Account;
 using ServiceLayer.Models;
@@ -26,7 +27,7 @@ namespace ServiceLayer.NewsArticle
         public async Task<IEnumerable<NewsArticleDTO>> GetAllNewsArticleAsync()
         {
             var articles = await articleRepository.ListAllAsync();
-
+            articles = articles.OrderByDescending(a => a.ModifiedDate);
             var articleDtos = mapper.Map<IEnumerable<NewsArticleDTO>>(articles);
             var allNewsArticleAsync = articleDtos.ToList();
             foreach (var article in allNewsArticleAsync)
@@ -141,6 +142,25 @@ namespace ServiceLayer.NewsArticle
             article.ModifiedDate = DateTime.Now;
             var effectedRow = await articleRepository.UpdateAsync(article);
             return effectedRow;
+        }
+
+        public async Task<
+            PaginatedList<Repository.Entities.NewsArticle>
+        > ListArticlesWithPaginationAndFitler(
+            string? searchString,
+            string? sortOrder,
+            int? pageNumber,
+            int? pageSize
+        )
+        {
+            pageNumber ??= 1;
+            pageSize ??= 4;
+            return await articleRepository.GetCategoriesQuery(
+                (int)pageNumber,
+                (int)pageSize,
+                searchString,
+                sortOrder
+            );
         }
     }
 }

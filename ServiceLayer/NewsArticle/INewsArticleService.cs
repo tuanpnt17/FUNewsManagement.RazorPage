@@ -1,4 +1,5 @@
-﻿using ServiceLayer.Models;
+﻿using Repository.Data;
+using ServiceLayer.Models;
 
 namespace ServiceLayer.NewsArticle
 {
@@ -18,5 +19,12 @@ namespace ServiceLayer.NewsArticle
 
         Task<int?> UpdateNewsArticleAsync(NewsArticleDTO newsArticleDto, string currentUserId);
         Task<int?> DeleteNewsArticleAsync(string newsArticleId);
+
+        Task<PaginatedList<Repository.Entities.NewsArticle>> ListArticlesWithPaginationAndFitler(
+            string? searchString,
+            string? sortOrder,
+            int? pageNumber,
+            int? pageSize
+        );
     }
 }

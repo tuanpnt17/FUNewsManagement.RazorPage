@@ -16,6 +16,44 @@ namespace Repository.NewsArticles
             return newsArticle;
         }
 
+        public async Task<PaginatedList<NewsArticle>> GetCategoriesQuery(
+            int pageNumber,
+            int pageSize,
+            string? searchString,
+            string? sortOrder
+        )
+        {
+            var newsArticles = context.NewsArticles.AsQueryable();
+            newsArticles = newsArticles
+                .Include(c => c.Category)
+                .Include(c => c.CreatedBy)
+                .Include(c => c.Tags);
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                searchString = searchString.Trim().ToLower();
+                newsArticles = newsArticles.Where(x =>
+                    x.NewsTitle.ToLower().Contains(searchString)
+                    || x.Headline.ToLower().Contains(searchString)
+                    || x.NewsSource.ToLower().Contains(searchString)
+                    || x.CreatedBy.AccountName.ToLower().Contains(searchString)
+                );
+            }
+            newsArticles = sortOrder switch
+            {
+                "title" => newsArticles.OrderBy(c => c.NewsTitle),
+                "title_desc" => newsArticles.OrderByDescending(c => c.NewsTitle),
+                "date" => newsArticles.OrderBy(c => c.ModifiedDate),
+                _ => newsArticles.OrderByDescending(c => c.ModifiedDate),
+            };
+
+            var result = await PaginatedList<NewsArticle>.CreateAsync(
+                newsArticles.AsNoTracking(),
+                pageNumber,
+                pageSize
+            );
+            return result;
+        }
+
         public async Task<IEnumerable<NewsArticle>> ListAllAsync()
         {
             var newsArticles = await context

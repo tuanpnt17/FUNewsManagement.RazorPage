@@ -5,7 +5,7 @@ namespace PhamNguyenTrongTuanRazorPages.Pages
 {
     public class IndexModel(INewsArticleService newsArticleService, IMapper mapper) : PageModel
     {
-        public IEnumerable<NewsArticleViewModel> NewsArticles { get; set; } = default!;
+        public IEnumerable<NewsArticleViewModel> NewsArticles { get; set; } = null!;
 
         public async Task OnGetAsync()
         {

@@ -14,6 +14,7 @@ namespace PhamNguyenTrongTuanRazorPages.Models.NewsArticle
         public required string Headline { get; set; }
 
         public string? NewsSource { get; set; }
+        public string? NewsContent { get; set; }
 
         [Display(Name = "Status")]
         public required NewsStatus NewsStatus { get; set; }

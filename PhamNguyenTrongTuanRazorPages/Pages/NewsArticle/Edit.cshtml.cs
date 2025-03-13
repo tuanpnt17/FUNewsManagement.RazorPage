@@ -1,5 +1,7 @@
 ﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.SignalR;
+using PhamNguyenTrongTuanRazorPages.Hubs;
 using PhamNguyenTrongTuanRazorPages.Models.NewsArticle;
 using ServiceLayer.Account;
 using ServiceLayer.Category;
@@ -15,9 +17,12 @@ namespace PhamNguyenTrongTuanRazorPages.Pages.NewsArticle
         IAccountService accountService,
         ITagService tagService,
         INewsArticleService newsArticleService,
-        IMapper mapper
+        IMapper mapper,
+        IHubContext<SignalRServer> hubContext
     ) : PageModel
     {
+        private readonly IHubContext<SignalRServer> _hubContext = hubContext;
+
         [BindProperty]
         public UpdateNewsArticleViewModel NewsArticle { get; set; } = null!;
 
@@ -70,6 +75,9 @@ namespace PhamNguyenTrongTuanRazorPages.Pages.NewsArticle
                 newsArticleDto,
                 currentUserId
             );
+            if (updatedNewsArticle <= 0)
+                return BadRequest();
+            await _hubContext.Clients.All.SendAsync("LoadArticles");
             return RedirectToPage("./Index");
         }
     }

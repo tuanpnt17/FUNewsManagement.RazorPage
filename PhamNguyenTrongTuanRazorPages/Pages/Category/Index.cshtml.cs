@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using PhamNguyenTrongTuanRazorPages.Models.Category;
+﻿using PhamNguyenTrongTuanRazorPages.Models.Category;
 using ServiceLayer.Category;
 using ServiceLayer.Models;
 

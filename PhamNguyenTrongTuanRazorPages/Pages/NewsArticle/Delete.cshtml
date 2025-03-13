@@ -26,12 +26,6 @@
             @Html.DisplayFor(model => model.NewsArticle.Headline)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.NewsArticle.CreatedDate)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.NewsArticle.CreatedDate)
-        </dd>
-        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.NewsArticle.NewsContent)
         </dt>
         <dd class="col-sm-10">
@@ -50,10 +44,10 @@
             @Html.DisplayFor(model => model.NewsArticle.NewsStatus)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.NewsArticle.UpdatedById)
+            @Html.DisplayNameFor(model => model.NewsArticle.UpdatedByName)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.NewsArticle.UpdatedById)
+            @Html.DisplayFor(model => model.NewsArticle.UpdatedByName)
         </dd>
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.NewsArticle.ModifiedDate)
@@ -62,16 +56,10 @@
             @Html.DisplayFor(model => model.NewsArticle.ModifiedDate)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.NewsArticle.Category)
+            @Html.DisplayNameFor(model => model.NewsArticle.CategoryName)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.NewsArticle.Category.CategoryDesciption)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.NewsArticle.CreatedBy)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.NewsArticle.CreatedBy.AccountId)
+            @Html.DisplayFor(model => model.NewsArticle.CategoryName)
         </dd>
     </dl>
     

@@ -1,55 +1,49 @@
-﻿namespace PhamNguyenTrongTuanRazorPages.Pages.NewsArticle
+﻿using Microsoft.AspNetCore.SignalR;
+using PhamNguyenTrongTuanRazorPages.Hubs;
+using PhamNguyenTrongTuanRazorPages.Models.NewsArticle;
+using ServiceLayer.NewsArticle;
+
+namespace PhamNguyenTrongTuanRazorPages.Pages.NewsArticle
 {
     [Authorize(Roles = "Staff")]
-    public class DeleteModel : PageModel
+    public class DeleteModel(
+        INewsArticleService newsArticleService,
+        IMapper mapper,
+        IHubContext<SignalRServer> hubContext
+    ) : PageModel
     {
-        private readonly Repository.Data.FuNewsDbContext _context;
-
-        public DeleteModel(Repository.Data.FuNewsDbContext context)
-        {
-            _context = context;
-        }
-
         [BindProperty]
-        public Repository.Entities.NewsArticle NewsArticle { get; set; } = default!;
+        public ViewNewsArticleViewModel NewsArticle { get; set; } = null!;
 
-        public async Task<IActionResult> OnGetAsync(string id)
+        public async Task<IActionResult> OnGetAsync(string? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var newsarticle = await _context.NewsArticles.FirstOrDefaultAsync(m =>
-                m.NewsArticleId == id
-            );
+            var newsArticleDto = await newsArticleService.GetNewsArticleByIdAsync(id);
 
-            if (newsarticle == null)
+            if (newsArticleDto == null)
             {
                 return NotFound();
             }
-            else
-            {
-                NewsArticle = newsarticle;
-            }
+
+            NewsArticle = mapper.Map<ViewNewsArticleViewModel>(newsArticleDto);
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(string id)
+        public async Task<IActionResult> OnPostAsync(string? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var newsarticle = await _context.NewsArticles.FindAsync(id);
-            if (newsarticle != null)
-            {
-                NewsArticle = newsarticle;
-                _context.NewsArticles.Remove(NewsArticle);
-                await _context.SaveChangesAsync();
-            }
-
+            var deleteEffected = await newsArticleService.DeleteNewsArticleAsync(id);
+            if (!(deleteEffected > 0))
+                return BadRequest();
+            await hubContext.Clients.All.SendAsync("LoadArticles");
             return RedirectToPage("./Index");
         }
     }

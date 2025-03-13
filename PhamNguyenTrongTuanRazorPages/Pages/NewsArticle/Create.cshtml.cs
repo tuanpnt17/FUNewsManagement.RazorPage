@@ -1,5 +1,7 @@
 ﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.SignalR;
+using PhamNguyenTrongTuanRazorPages.Hubs;
 using PhamNguyenTrongTuanRazorPages.Models.NewsArticle;
 using ServiceLayer.Category;
 using ServiceLayer.Models;
@@ -12,9 +14,12 @@ namespace PhamNguyenTrongTuanRazorPages.Pages.NewsArticle
         INewsArticleService newsArticleService,
         IMapper mapper,
         ICategoryService categoryService,
-        ITagService tagService
+        ITagService tagService,
+        IHubContext<SignalRServer> hubContext
     ) : PageModel
     {
+        private readonly IHubContext<SignalRServer> _hubContext = hubContext;
+
         public async Task<IActionResult> OnGet()
         {
             SelectListItems = new SelectList(
@@ -45,6 +50,7 @@ namespace PhamNguyenTrongTuanRazorPages.Pages.NewsArticle
 
             var currentUserId = HttpContext.User.FindFirst(x => x.Type == ClaimTypes.Sid)!.Value;
             await newsArticleService.CreateNewsArticleAsync(newsArticleDto, currentUserId);
+            await _hubContext.Clients.All.SendAsync("LoadArticles");
             return RedirectToPage("./Index");
         }
     }
